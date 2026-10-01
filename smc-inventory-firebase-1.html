@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SMC Inventory</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f5;--card:#fff;--ink:#16202c;--mute:#637083;--line:#d9dfe7;--navy:#12263f;--acc:#e3a008;--low:#c2391f;--ok:#2f7d4f;--okbg:#e6f4ec;--lowbg:#fdecea;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;font-size:16px;line-height:1.5}
+header{background:var(--navy);color:#fff;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.bar{max-width:640px;margin:0 auto;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.logo{background:var(--acc);color:#12263f;font-weight:700;padding:2px 9px;border-radius:4px;font-size:18px}
+.bar h1{margin:0;font-size:17px;font-weight:600;flex:1}
+.bar button{background:none;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:4px;padding:5px 12px;font:inherit;font-size:14px;cursor:pointer}
+main{max-width:640px;margin:0 auto;padding:14px}
+h2{font-size:20px;margin:0 0 12px}
+h3{font-size:15px;margin:18px 0 8px;color:var(--mute);font-weight:600}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{border:0;border-radius:10px;padding:26px 12px;font:inherit;font-size:20px;font-weight:700;cursor:pointer;text-align:center;color:#fff}
+.tile small{display:block;font-size:13px;font-weight:400;opacity:.85;margin-top:2px}
+.t1{background:var(--ok)}.t2{background:var(--low)}.t3{background:var(--navy)}.t4{background:var(--acc);color:#12263f}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-weight:600;padding:12px 16px;border-radius:8px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.chip.on{border-color:var(--acc);background:var(--acc);color:#12263f}
+.chip small{display:block;font-weight:400;font-size:12px}
+input{font:inherit;color:inherit;width:100%;padding:12px;border:2px solid var(--line);border-radius:8px;background:var(--card)}
+input:focus,button:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+input.big{font-size:24px;font-weight:700}
+.go{width:100%;margin-top:20px;padding:15px;border:0;border-radius:8px;font:inherit;font-size:18px;font-weight:700;color:#fff;cursor:pointer}
+.go.in{background:var(--ok)}.go.out{background:var(--low)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:8px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.nm{font-weight:600}.sub{font-size:13px;color:var(--mute)}
+.in-c{color:var(--ok);font-weight:700}.out-c{color:var(--low);font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px}
+.stat b{display:block;font-size:24px;line-height:1.2}.stat span{font-size:13px;color:var(--mute)}
+.avail{margin-top:8px;font-size:14px;color:var(--mute)}
+.wrap{overflow-x:auto;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;background:var(--card);font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{background:var(--navy);color:#fff;font-weight:600}
+td.n,th.n{text-align:right}
+.btns{display:flex;gap:8px;margin:12px 0}
+.b{flex:1;font:inherit;font-weight:600;padding:11px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.empty{text-align:center;color:var(--mute);padding:22px 10px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:8px;font-weight:600;z-index:9}
+@media print{header,.btns,.chips{display:none}body{background:#fff}}
+
+:root{--bg:#f4f8fb;--line:#dbe4ec}
+header{background:#fff;color:var(--navy);border-bottom:1px solid var(--line)}
+.bar button{border-color:var(--line);color:var(--navy)}
+.tile{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:0 2px 10px rgba(18,38,63,.06);display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 10px}
+.tile small{color:var(--mute);opacity:1}
+.ic{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:26px;color:#fff;margin-bottom:4px}
+.t1 .ic{background:var(--ok)}.t2 .ic{background:var(--low)}.t3 .ic{background:var(--navy)}.t4 .ic{background:var(--acc);color:#12263f}
+.hello{margin:4px 0 16px}.hello b{font-size:22px;display:block}.hello span{color:var(--mute);font-size:15px}
+.foot{text-align:center;margin:44px 0 12px;color:var(--mute)}
+.foot svg{display:block;margin:0 auto 10px}
+.foot b{display:block;font-size:16px;letter-spacing:.2em;color:var(--navy);font-weight:600}
+.foot span{font-size:12px}
+.dd{width:100%;display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border:2px solid var(--line);border-radius:8px;background:#fff;font:inherit;font-size:16px;color:var(--ink);cursor:pointer;text-align:left}
+.ddp{border:2px solid var(--acc);border-radius:8px;margin-top:6px;background:#fff;max-height:320px;overflow-y:auto;padding:8px}
+.ddo{display:block;width:100%;text-align:left;padding:11px 10px;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink);cursor:pointer}
+.ddo.on{background:var(--okbg);font-weight:700}
+.inv{max-height:90px;border-radius:6px;margin-top:8px;cursor:pointer;display:block}.inv.big{max-height:none;width:100%}
+dialog{border:0;border-radius:10px;padding:18px;width:min(92vw,400px);background:#fff;color:var(--ink)}dialog::backdrop{background:rgba(0,0,0,.45)}
+
+/* premium theme */
+:root{--bg:#f5f3ee;--card:#fff;--ink:#1a2330;--mute:#6f7785;--line:#e7e2d7;--navy:#0f2a43;--acc:#c9a24a;--ok:#2a7d5f;--okbg:#e5f3ed;--low:#b8452f;--lowbg:#fbeae6;--sh:0 8px 26px rgba(15,42,67,.08);--serif:'Cormorant Garamond',Georgia,'Times New Roman',serif}
+body{background:radial-gradient(900px 420px at 100% -10%,rgba(201,162,74,.14),transparent 60%),radial-gradient(700px 400px at -10% 0,rgba(15,42,67,.07),transparent 60%),var(--bg);background-attachment:fixed}
+header{background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.logo{background:linear-gradient(135deg,#0f2a43,#1f4d78);color:#ecd18a;border-radius:9px;padding:3px 10px;font-family:var(--serif);font-size:20px;letter-spacing:.08em;box-shadow:0 2px 8px rgba(15,42,67,.25)}
+.bar h1{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--navy);letter-spacing:.02em}
+.bar button{border-radius:999px;padding:6px 14px}
+h2,.hero .hb{font-family:var(--serif);font-weight:700;font-variant-numeric:lining-nums}
+h2{font-size:26px;color:var(--navy);margin-bottom:14px}
+h3{text-transform:none;font-size:13px;letter-spacing:.04em;color:var(--mute)}
+.hero{position:relative;overflow:hidden;border-radius:22px;padding:24px 20px 18px;margin-bottom:18px;color:#fff;background:linear-gradient(140deg,#0b2239 0%,#153e63 70%,#1d5482 100%);box-shadow:0 14px 34px rgba(15,42,67,.28)}
+.hero:before{content:"";position:absolute;right:-40px;top:-40px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(236,209,138,.35),transparent 65%)}
+.hero .hk{font-size:13px;letter-spacing:.14em;color:#ecd18a;position:relative}
+.hero .hb{font-size:32px;line-height:1.15;margin:2px 0 14px;position:relative}
+.hero .hst{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:relative}
+.hero .hst div{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:9px 6px;text-align:center}
+.hero .hst b{display:block;font-size:22px;line-height:1.2}
+.hero .hst span{font-size:11.5px;opacity:.8}
+.tiles{gap:14px}
+.tile{border-radius:22px;border:1px solid var(--line);box-shadow:var(--sh);padding:24px 10px 20px;font-size:18px;font-weight:600;transition:transform .15s,box-shadow .15s}
+.tile:active{transform:scale(.97)}
+.tile small{font-size:12.5px}
+.ic{width:58px;height:58px;font-size:27px;box-shadow:0 8px 16px rgba(15,42,67,.2),inset 0 1px 0 rgba(255,255,255,.35)}
+.t1 .ic{background:linear-gradient(145deg,#3fae86,#1e7656)}
+.t2 .ic{background:linear-gradient(145deg,#df7458,#b03f29)}
+.t3 .ic{background:linear-gradient(145deg,#2b5f91,#0f2a43)}
+.t4 .ic{background:linear-gradient(145deg,#e6c36e,#b98a2b);color:#1a2330}
+.card,.stat{border-radius:16px;border:1px solid var(--line);box-shadow:0 4px 14px rgba(15,42,67,.05)}
+.stat{border-top:3px solid var(--acc)}
+.chip{border-radius:999px;border:1.5px solid var(--line);padding:10px 18px;background:#fff;transition:all .15s}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 4px 12px rgba(15,42,67,.25)}
+input{border-radius:14px;border:1.5px solid var(--line);padding:13px 14px}
+input:focus,button:focus-visible{outline:none;border-color:var(--acc);box-shadow:0 0 0 4px rgba(201,162,74,.25)}
+.dd{border-radius:14px;border:1.5px solid var(--line);box-shadow:0 2px 8px rgba(15,42,67,.05)}
+.ddp{border-radius:14px;border:1.5px solid var(--acc);box-shadow:var(--sh)}
+.ddo.on{background:#f4ead0;color:var(--navy)}
+.go{border-radius:16px;padding:16px;letter-spacing:.02em;box-shadow:0 10px 22px rgba(15,42,67,.2)}
+.go.in{background:linear-gradient(145deg,#37a07b,#1e7656)}
+.go.out{background:linear-gradient(145deg,#d96a4f,#ab3d28)}
+.b{border-radius:12px}
+table{border-radius:12px;overflow:hidden}
+th{background:linear-gradient(135deg,#0f2a43,#1f4d78);font-weight:600;letter-spacing:.02em}
+.wrap{border-radius:12px;border:1px solid var(--line);background:#fff}
+.toast{background:var(--navy);color:#fff;border-radius:999px;padding:12px 22px;box-shadow:0 10px 26px rgba(15,42,67,.35)}
+dialog{border-radius:20px;box-shadow:0 24px 60px rgba(15,42,67,.35)}
+.foot{margin-top:46px}
+.foot b{font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:.22em;color:var(--navy)}
+.foot span{letter-spacing:.12em;text-transform:uppercase;font-size:11px}
+.foot:before,.foot:after{content:"";display:block;height:1px;width:120px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--acc),transparent)}
+.foot:before{margin-bottom:14px}.foot:after{margin-top:14px}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<header><div class="bar"><span class="logo">SMC</span><h1>Inventory</h1><button id="back" hidden>← Home</button></div></header>
+<main id="m"></main>
+<dialog id="dg"></dialog>
+<script>
+var K='smc-inv-v2',CATS=['Cement','Rod','Sand','Electric','Plumbing','Glass item','Tiles','Office item','Stationery','Pantry'],UNITS=['Pcs','Ton','Kg','Coil','Unite','Box','Gari','Packet','Bottle','Carton','Bag'],SUBS={'Office item':['Table', 'Chair', 'Executive chair', 'Visitor chair', 'Sofa', 'Almirah / Cabinet', 'File cabinet', 'Bookshelf', 'Whiteboard', 'Notice board', 'Ceiling fan', 'Table fan', 'Stand fan', 'Wall fan', 'AC', 'TV', 'Refrigerator', 'Water dispenser', 'Water filter', 'Microwave oven', 'Electric kettle', 'Computer', 'Laptop', 'Monitor', 'Printer', 'Scanner', 'Photocopier', 'Projector', 'UPS', 'Telephone set', 'Router', 'CCTV camera', 'Extension board', 'Wall clock', 'Fire extinguisher', 'First aid box', 'Dustbin', 'Curtain', 'Carpet'],Stationery:['Paper', 'Pen', 'Pencil', 'Marker', 'File', 'Folder', 'Register book', 'Notepad', 'Stapler', 'Staple pin', 'Paper clip', 'Glue stick', 'Scissors', 'Tape', 'Envelope', 'Ink / Toner cartridge'],Pantry:['Biscuit', 'Drinking water', 'Coffee', 'Coffee mate', 'Tea', 'Sugar', 'Milk powder', 'Juice', 'Soft drink', 'Snacks', 'Paper cup', 'Tissue', 'Hand wash', 'Dish wash'],Tiles:['Floor tiles', 'Wall tiles', 'Porcelain tiles', 'Ceramic tiles', 'Vitrified tiles', 'Anti-skid tiles', 'Outdoor / Parking tiles', 'Mosaic tiles', 'Border tiles', 'Skirting tiles', 'Tile adhesive', 'Tile grout', 'Tile spacer'],Sand:['Sand'],Rod:['BSRM','KSRM'],Cement:['Cement'],'Glass item':['Clear glass', 'Tinted glass', 'Frosted glass', 'Tempered glass', 'Laminated glass', 'Reflective glass', 'Mirror', 'Glass door', 'Glass partition', 'Shower glass', 'Sliding window glass', 'Door handle', 'Door closer', 'Floor spring', 'Patch fitting', 'Glass hinge', 'Glass clamp', 'Glass channel', 'Rubber gasket', 'Silicone sealant', 'Glass cutter'],Plumbing:['PVC pipe', 'UPVC pipe', 'CPVC pipe', 'PPR pipe', 'GI pipe', 'HDPE pipe', 'Elbow', 'Tee', 'Bend', 'Reducer', 'Pipe socket / Coupling', 'Union', 'Nipple', 'Flange', 'End cap', 'Gate valve', 'Ball valve', 'Check valve', 'Float valve', 'Angle cock', 'Bib cock', 'Tap / Faucet', 'Mixer tap', 'Health faucet', 'Shower set', 'Hand shower', 'Wash basin', 'Commode / WC', 'Flush tank', 'Kitchen sink', 'Floor trap', 'Gully trap', 'Water tank', 'Water pump', 'Pipe clamp', 'Teflon tape', 'PVC solvent / Glue', 'Manhole cover'],Electric:['Cable', 'Socket', 'Switch', 'Switch board', 'Plug', 'Fan regulator', 'Ceiling fan', 'Exhaust fan', 'LED light', 'Tube light', 'Spot light', 'Bulb', 'Bulb holder', 'MCB / Circuit breaker', 'DB box', 'Distribution board', 'Panel board', 'Conduit pipe', 'Conduit bend', 'Junction box', 'Gang box', 'Earthing rod', 'Lightning arrester', 'Insulation tape', 'Cable tie', 'Cable tray', 'Door bell', 'Change over switch', 'Meter', 'Capacitor']},SIZES={'AC': ['1 ton', '1.5 ton', '2 ton', '3 ton'], 'TV': ['32 inch', '43 inch', '50 inch', '55 inch', '65 inch'], 'Refrigerator': ['200 L', '300 L', '400 L', '500 L'], 'Table fan': ['12 inch', '16 inch'], 'Stand fan': ['16 inch', '18 inch'], 'Wall fan': ['16 inch', '18 inch'], 'Monitor': ['19 inch', '22 inch', '24 inch', '27 inch'], 'UPS': ['600 VA', '1000 VA', '2000 VA'], 'Microwave oven': ['20 L', '25 L', '30 L'], 'Whiteboard': ['2x3 ft', '3x4 ft', '4x6 ft'], 'Fire extinguisher': ['2 kg', '5 kg', '9 kg'], 'Paper': ['A4', 'A3', 'Legal'], 'Register book': ['100 pages', '200 pages', '300 pages'], 'Envelope': ['A4', 'A5', 'Legal'], 'Tape': ['Transparent', 'Masking', 'Double side'], 'Drinking water': ['500 ml', '1 L', '1.5 L', '5 L', '20 L'], 'Coffee': ['50 g', '100 g', '200 g', '500 g'], 'Coffee mate': ['200 g', '400 g', '500 g'], 'Tea': ['200 g', '400 g', '500 g'], 'Sugar': ['500 g', '1 kg', '5 kg'], 'Milk powder': ['400 g', '500 g', '1 kg'], 'Juice': ['200 ml', '250 ml', '1 L'], 'Soft drink': ['250 ml', '500 ml', '1 L', '2 L'],'Floor tiles': ['12x12 inch', '16x16 inch', '24x24 inch', '24x48 inch', '600x600 mm', '800x800 mm'], 'Porcelain tiles': ['12x12 inch', '16x16 inch', '24x24 inch', '24x48 inch', '600x600 mm', '800x800 mm'], 'Vitrified tiles': ['12x12 inch', '16x16 inch', '24x24 inch', '24x48 inch', '600x600 mm', '800x800 mm'], 'Ceramic tiles': ['12x12 inch', '16x16 inch', '24x24 inch'], 'Wall tiles': ['8x12 inch', '10x16 inch', '12x18 inch', '12x24 inch', '300x600 mm'], 'Anti-skid tiles': ['12x12 inch', '16x16 inch', '300x300 mm'], 'Outdoor / Parking tiles': ['12x12 inch', '16x16 inch', '400x400 mm'], 'Mosaic tiles': ['12x12 inch', '300x300 mm'], 'Border tiles': ['3x12 inch', '4x12 inch', '4x24 inch'], 'Skirting tiles': ['4x24 inch', '6x24 inch', '4x32 inch'], 'Tile adhesive': ['5 kg', '20 kg', '25 kg'], 'Tile grout': ['1 kg', '5 kg'], 'Tile spacer': ['1.5 mm', '2 mm', '3 mm'],'Sand':['Sylhet sand', 'Local sand', 'Coarse sand', 'Fine sand', 'Plaster sand', 'Filling sand'],'BSRM':['6 mm', '8 mm', '10 mm', '12 mm', '16 mm', '20 mm', '22 mm', '25 mm', '28 mm', '32 mm'],'KSRM':['6 mm', '8 mm', '10 mm', '12 mm', '16 mm', '20 mm', '22 mm', '25 mm', '28 mm', '32 mm'],'Cement':['25 kg','40 kg','50 kg'],'Clear glass': ['3 mm', '4 mm', '5 mm', '6 mm', '8 mm', '10 mm', '12 mm', '15 mm', '19 mm'], 'Tinted glass': ['3 mm', '4 mm', '5 mm', '6 mm', '8 mm', '10 mm', '12 mm'], 'Frosted glass': ['3 mm', '4 mm', '5 mm', '6 mm', '8 mm', '10 mm'], 'Tempered glass': ['5 mm', '6 mm', '8 mm', '10 mm', '12 mm', '15 mm', '19 mm'], 'Laminated glass': ['6.38 mm', '8.38 mm', '10.38 mm', '12.38 mm'], 'Reflective glass': ['5 mm', '6 mm', '8 mm', '10 mm', '12 mm'], 'Mirror': ['3 mm', '4 mm', '5 mm', '6 mm'], 'Glass door': ['8 mm', '10 mm', '12 mm'], 'Glass partition': ['8 mm', '10 mm', '12 mm'], 'Shower glass': ['8 mm', '10 mm', '12 mm'], 'Sliding window glass': ['5 mm', '6 mm', '8 mm'], 'Door handle': ['12 inch', '18 inch', '24 inch', '36 inch'], 'Silicone sealant': ['280 ml', '300 ml'],'PVC pipe': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch', '3 inch', '4 inch', '6 inch'], 'UPVC pipe': ['2 inch', '3 inch', '4 inch', '6 inch'], 'CPVC pipe': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch'], 'PPR pipe': ['20 mm', '25 mm', '32 mm', '40 mm', '50 mm', '63 mm'], 'GI pipe': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch', '3 inch'], 'HDPE pipe': ['20 mm', '25 mm', '32 mm', '40 mm', '63 mm', '90 mm', '110 mm'], 'Elbow': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch', '3 inch', '4 inch', '6 inch'], 'Tee': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch', '3 inch', '4 inch', '6 inch'], 'Bend': ['2 inch', '3 inch', '4 inch', '6 inch'], 'Reducer': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch', '3 inch', '4 inch', '6 inch'], 'Pipe socket / Coupling': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch', '3 inch', '4 inch', '6 inch'], 'Union': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch'], 'Nipple': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch'], 'Flange': ['1 inch', '1.25 inch', '1.5 inch', '2 inch', '3 inch', '4 inch', '6 inch'], 'End cap': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch', '3 inch', '4 inch', '6 inch'], 'Gate valve': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch', '3 inch'], 'Ball valve': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch', '3 inch'], 'Check valve': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch', '3 inch'], 'Float valve': ['1/2 inch', '3/4 inch', '1 inch'], 'Angle cock': ['1/2 inch'], 'Bib cock': ['1/2 inch', '3/4 inch'], 'Kitchen sink': ['Single bowl', 'Double bowl'], 'Floor trap': ['4 inch', '6 inch'], 'Gully trap': ['4 inch', '6 inch'], 'Water tank': ['500 L', '1000 L', '1500 L', '2000 L', '3000 L'], 'Water pump': ['0.5 HP', '1 HP', '1.5 HP', '2 HP', '3 HP'], 'Pipe clamp': ['1/2 inch', '3/4 inch', '1 inch', '1.25 inch', '1.5 inch', '2 inch'], 'Teflon tape': ['1/2 inch', '3/4 inch'], 'PVC solvent / Glue': ['50 ml', '100 ml', '250 ml', '500 ml'],'Cable': ['1.5 mm', '2.5 mm', '4 mm', '6 mm', '10 mm', '16 mm'], 'Conduit pipe': ['20 mm', '25 mm', '32 mm'], 'Switch': ['1 gang', '2 gang', '3 gang', '4 gang'], 'Socket': ['2 pin', '3 pin', '5 pin', '6 pin'], 'Plug': ['2 pin', '3 pin', '5 pin'], 'MCB / Circuit breaker': ['6A', '10A', '16A', '20A', '32A', '40A', '63A'], 'LED light': ['3W', '5W', '9W', '12W', '18W', '24W'], 'Spot light': ['3W', '5W', '7W', '12W'], 'Bulb': ['5W', '9W', '15W', '25W'], 'Tube light': ['2 ft', '4 ft'], 'Ceiling fan': ['48 inch', '56 inch'], 'Exhaust fan': ['6 inch', '8 inch', '10 inch', '12 inch'], 'Earthing rod': ['5 ft', '8 ft', '10 ft'], 'Gang box': ['2 gang', '3 gang', '4 gang', '6 gang'], 'Cable tie': ['4 inch', '6 inch', '8 inch', '12 inch'], 'Cable tray': ['100 mm', '150 mm', '300 mm'], 'Switch board': ['4 module', '6 module', '8 module', '12 module']};
+function localTx(){try{return JSON.parse(localStorage.getItem(K))||[]}catch(e){return[]}}
+var tx=localTx(),DB=null,A=null,DL=null,RO=false,cloud=true,ME=null,ROLE='',USERS=[],unsubs=[],MIN={},photo=null,busy=false,PPK=[];
+try{JSON.parse(localStorage.getItem('smc-min-v1')||'[]').forEach(function(x){MIN[x.k]=x.v})}catch(e){}
+var V='home',T='in',cat='',unit='',qty='',note='',sup='',item='',size='',sother=false,dd='',isq='',rng='7',dc='',cf='all';
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function num(v){return Number(v).toLocaleString('en-US',{maximumFractionDigits:2})}
+function dt(t){return new Date(t).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})}
+function save(){if(cloud)return;try{localStorage.setItem(K,JSON.stringify(tx))}catch(e){}}
+function stock(c,u,i){i=i||'';return Math.round(tx.reduce(function(a,t){return t.cat===c&&t.unit===u&&(t.item||'')===i?a+(t.type==='in'?t.qty:-t.qty):a},0)*100)/100}
+function go(v,t){if(v==='entry'&&RO){toast('আপনার শুধু দেখার অনুমতি আছে');return}V=v;if(t){T=t;cat='';unit='';qty='';note='';sup='';item='';size='';sother=false;dd='';isq='';photo=null}render();window.scrollTo(0,0)}
+function toast(s){var d=document.createElement('div');d.className='toast';d.textContent=s;document.body.appendChild(d);setTimeout(function(){d.remove()},1800)}
+function chips(list,sel,fn,extra){return '<div class="chips">'+list.map(function(x){return '<button class="chip'+(x===sel?' on':'')+'" onclick="'+fn+'(\''+x+'\')">'+x+(extra?'<small>'+extra(x)+'</small>':'')+'</button>'}).join('')+'</div>'}
+function pickC(c){cat=c;item='';size='';sother=false;dd='';isq='';render()}
+function lab(){var z=size.trim();return item+(z?' '+z:'')}
+function ddOpen(n){dd=dd===n?'':n;isq='';render()}
+function pickI(i){item=i;size='';sother=false;dd='';isq='';render()}
+function pickS(z){if(z==='__o'){size='';sother=true}else{size=z;sother=false}dd='';render()}
+function pickU(u){unit=u;render()}
+function pickR(r){rng=r;render()}
+function openC(c){dc=c;cf='all';V='cdet';render();window.scrollTo(0,0)}
+function pickF(f){cf=f;render()}
+function fd(t){return new Date(t).toLocaleString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric',hour:'numeric',minute:'2-digit'})}
+function txr(t){return '<div class="card"><div class="row"><div><div class="nm">'+esc(t.cat)+(t.item?' \u2013 '+esc(t.item):'')+'</div><div class="sub">'+(t.sup?'Supplier: '+esc(t.sup)+' · ':'')+esc(t.note||'—')+' · '+dt(t.ts)+'</div></div><div class="'+(t.type==='in'?'in-c':'out-c')+'">'+(t.type==='in'?'+':'−')+num(t.qty)+' '+esc(t.unit)+'</div></div></div>'}
+function pairs(list){var o={};list.forEach(function(t){var k=t.cat+'|'+(t.item||'')+'|'+t.unit;o[k]=o[k]||{c:t.cat,it:t.item||'',u:t.unit,i:0,o:0};o[k][t.type==='in'?'i':'o']+=t.qty});return Object.keys(o).map(function(k){return o[k]})}
+function inRange(){if(rng==='all')return tx;var d=new Date();d.setHours(0,0,0,0);var from=d.getTime()-(rng==='today'?0:(Number(rng)-1)*864e5);return tx.filter(function(t){return t.ts>=from})}
+function render(){
+  var h='';$('back').hidden=V==='home'||V==='login'||V==='noacc';$('back').textContent=V==='cdet'?'\u2190 Dashboard':'\u2190 Home';
+  if(V==='login'){
+    h='<div class="hero"><div class="hk">SYLDON MEDICAL CITY</div><div class="hb">SMC Inventory</div></div><div class="card"><h3 style="margin-top:0">ইমেইল</h3><input id="le" type="email" autocapitalize="none" autocomplete="username"><h3>পাসওয়ার্ড</h3><input id="lp" type="password" autocomplete="current-password"><button class="go in" onclick="login()">লগইন</button><div class="sub" style="text-align:center;margin-top:14px">প্রথমবার শুধু অ্যাডমিন: <a href="#" onclick="signup();return false">অ্যাকাউন্ট খুলুন</a></div></div>';
+  }else if(V==='noacc'){
+    h='<h2>অনুমতি নেই</h2><div class="card">আপনার অ্যাকাউন্ট তৈরি হয়েছে, কিন্তু অ্যাডমিন এখনো অনুমতি দেননি। অ্যাডমিনকে বলুন আপনাকে যোগ করতে।</div><button class="go out" onclick="logout()">Logout</button>';
+  }else if(V==='users'){
+    h='<h2>Users</h2><div class="card"><div class="nm">নতুন ব্যবহারকারী</div><h3>নাম</h3><input id="un"><h3>ইমেইল</h3><input id="ue" type="email" autocapitalize="none"><h3>পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)</h3><input id="up" type="text" autocapitalize="none"><h3>ভূমিকা</h3><select id="ur" style="width:100%;padding:12px;border-radius:14px;border:1.5px solid var(--line);background:#fff;font:inherit"><option value="store">Storekeeper (লিখতে ও দেখতে পারবে)</option><option value="viewer">Viewer (শুধু দেখবে)</option><option value="admin">Admin (সব পারবে)</option></select><button class="go in" onclick="addUser()">যোগ করুন</button></div><h3>সবাই</h3>'+USERS.map(function(u){return '<div class="card"><div class="row"><div><div class="nm">'+esc(u.name||'')+'</div><div class="sub">'+esc(u.email)+'</div></div><select onchange="setRole(\''+u.id+'\',this.value)" style="padding:8px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font:inherit"><option value="store"'+(u.role==='store'?' selected':'')+'>Storekeeper</option><option value="viewer"'+(u.role==='viewer'?' selected':'')+'>Viewer</option><option value="admin"'+(u.role==='admin'?' selected':'')+'>Admin</option></select></div>'+(ME&&u.id===ME.uid?'':'<div class="btns" style="margin:8px 0 0"><button class="b" style="color:var(--low)" onclick="rmUser(\''+u.id+'\')">অনুমতি তুলে নিন</button></div>')+'</div>'}).join('');
+  }else if(V==='home'){
+    var d0=new Date();d0.setHours(0,0,0,0);var t0=tx.filter(function(t){return t.ts>=d0.getTime()});h='<div class="hero"><div class="hk">স্বাগতম</div><div class="hb">SMC Inventory</div><div class="hst"><div><b>'+t0.filter(function(t){return t.type==='in'}).length+'</b><span>আজ Stock in</span></div><div><b>'+t0.filter(function(t){return t.type==='out'}).length+'</b><span>আজ Stock out</span></div><div><b>'+pairs(tx).filter(function(p){return isLow(p.c,p.it,p.u)}).length+'</b><span>স্টক কম</span></div></div></div><div class="tiles"><button class="tile t1" onclick="go(\'entry\',\'in\')"><span class="ic">&#8595;</span>Stock in<small>মাল জমা</small></button><button class="tile t2" onclick="go(\'entry\',\'out\')"><span class="ic">&#8593;</span>Stock out<small>মাল খরচ</small></button><button class="tile t3" onclick="go(\'dash\')"><span class="ic">&#9638;</span>Dashboard<small>বর্তমান স্টক</small></button><button class="tile t4" onclick="go(\'rep\')"><span class="ic">&#9776;</span>Report<small>হিসাবের রিপোর্ট</small></button></div><button class="tile" style="width:100%;margin-top:12px;padding:14px;flex-direction:row;justify-content:center;font-size:16px" onclick="go(\'bk\')">Backup &amp; Restore</button>'+(ROLE==='admin'?'<button class="tile" style="width:100%;margin-top:12px;padding:14px;flex-direction:row;justify-content:center;font-size:16px" onclick="go(\'users\')">Users</button>':'')+'<div class="sub" style="text-align:center;margin-top:8px">'+(ME?esc(ME.email)+' · '+ROLE+' · <a href="#" onclick="logout();return false" style="color:var(--low)">Logout</a>':'')+'</div><div class="foot"><svg width="26" height="26" viewBox="0 0 26 26"><rect x="9" y="2" width="8" height="22" rx="2" fill="#e3a008"/><rect x="2" y="9" width="22" height="8" rx="2" fill="#e3a008"/></svg><b>SYLDON MEDICAL CITY</b><span>Inventory Management</span></div>'
+  }else if(V==='entry'){
+    h='<h2>'+(T==='in'?'Stock in':'Stock out')+'</h2><h3>Material বেছে নাও</h3>'+chips(CATS,cat,'pickC');
+    if(cat&&SUBS[cat]){
+      var IL=SUBS[cat].filter(function(x){return x.toLowerCase().indexOf(isq.toLowerCase())>-1});
+      h+='<h3>'+cat+' item</h3><button class="dd" onclick="ddOpen(\'i\')"><span>'+esc(item||'Item বেছে নাও')+'</span><span>'+(dd==='i'?'&#9652;':'&#9662;')+'</span></button>';
+      if(dd==='i')h+='<div class="ddp"><input id="is" placeholder="খুঁজুন (যেমন: cable, socket)" value="'+esc(isq)+'" style="margin-bottom:6px">'+(IL.length?IL.map(function(x){return '<button class="ddo'+(x===item?' on':'')+'" onclick="pickI(\''+x+'\')">'+esc(x)+'</button>'}).join(''):'<div class="empty">কিছু পাওয়া যায়নি।</div>')+'</div>';
+      if(item){
+        var SZ=SIZES[item],W=cat==='Sand'?'Type':'Size';
+        h+='<h3>'+W+' (ঐচ্ছিক)</h3>';
+        if(SZ){h+='<button class="dd" onclick="ddOpen(\'s\')"><span>'+esc(size||(sother?'অন্য '+W:W+' বেছে নাও'))+'</span><span>'+(dd==='s'?'&#9652;':'&#9662;')+'</span></button>';
+          if(dd==='s')h+='<div class="ddp">'+SZ.concat(['__o']).map(function(z){return '<button class="ddo'+(z===size?' on':'')+'" onclick="pickS(\''+z+'\')">'+(z==='__o'?'অন্য '+W+' লিখুন':esc(z))+'</button>'}).join('')+'</div>'}
+        if(!SZ||sother)h+='<input id="sz" placeholder="'+W+' লিখুন" value="'+esc(size)+'" style="margin-top:8px">';
+      }
+    }
+    if(cat&&(!SUBS[cat]||item)){
+      h+='<h3>Quantity'+(item?' — '+esc(lab()):'')+'</h3><input class="big" id="q" type="number" min="0" inputmode="decimal" placeholder="0" value="'+esc(qty)+'"><h3>Unit</h3>'+chips(UNITS,unit,'pickU',T==='out'?function(u){return 'আছে: '+num(stock(cat,u,lab()))}:null);
+      if(unit&&T==='out')h+='<div class="avail">'+cat+' স্টকে আছে: <b>'+num(stock(cat,unit,lab()))+' '+unit+'</b></div>';
+      if(T==='in'){var ss=[];tx.forEach(function(t){if(t.sup&&ss.indexOf(t.sup)<0)ss.push(t.sup)});h+='<h3>Supplier name</h3><input id="s" list="sl" placeholder="সরবরাহকারীর নাম" value="'+esc(sup)+'"><datalist id="sl">'+ss.map(function(s){return '<option value="'+esc(s)+'">'}).join('')+'</datalist>'}
+      if(T==='in'&&A)h+='<h3>চালানের ছবি (ঐচ্ছিক)</h3>'+(photo?'<div class="card" style="margin:0"><div class="row"><span class="sub">ছবি বাছা হয়েছে: '+esc(photo.name||'photo')+'</span><button class="b" style="flex:none;padding:4px 10px" onclick="photo=null;render()">সরান</button></div></div>':'<input id="ph" type="file" accept="image/*">');
+      h+='<h3>'+(T==='in'?'নোট (ঐচ্ছিক)':'প্রকল্প / কাজের বিবরণ (ঐচ্ছিক)')+'</h3><input id="n" placeholder="যেমন: ৩য় তলার ঢালাই" value="'+esc(note)+'"><button class="go '+T+'" onclick="commit()">'+(T==='in'?'Stock in করুন':'Stock out করুন')+'</button>';
+    }
+  }else if(V==='dash'){
+    var d=new Date();d.setHours(0,0,0,0);var td=tx.filter(function(t){return t.ts>=d.getTime()});
+    h='<h2>Dashboard</h2><div class="grid"><div class="stat"><b class="in-c">'+td.filter(function(t){return t.type==='in'}).length+'</b><span>আজ Stock in</span></div><div class="stat"><b class="out-c">'+td.filter(function(t){return t.type==='out'}).length+'</b><span>আজ Stock out</span></div></div>'+lowHtml()+'<h3>বর্তমান স্টক</h3>';
+    CATS.forEach(function(c){
+      var ks=[];tx.forEach(function(t){if(t.cat===c){var k=(t.item||'')+'|'+t.unit;if(ks.indexOf(k)<0)ks.push(k)}});
+      h+='<div class="card" style="cursor:pointer" onclick="openC(\''+c+'\')"><div class="nm">'+c+' <span class="sub">&#8250; details</span></div>'+(ks.length?ks.map(function(k){var a=k.split('|'),sv=stock(c,a[1],a[0]);return '<div class="row" style="margin-top:4px"><span class="sub">'+esc(a[0]||'Total')+'</span><span class="'+(sv<0||isLow(c,a[0],a[1])?'out-c':'nm')+'">'+num(sv)+' <span class="sub">'+a[1]+'</span></span></div>'}).join(''):'<div class="sub">এখনো কিছু নেই</div>')+'</div>';
+    });
+    h+='<h3>সাম্প্রতিক লেনদেন</h3>'+(tx.length?tx.slice(0,5).map(txr).join(''):'<div class="empty">এখনো কোনো Stock in বা out হয়নি।</div>');
+  }else if(V==='bk'){
+    var lt=localTx();
+    h='<h2>Backup &amp; Restore</h2><div class="card"><div class="nm">'+(cloud?'অনলাইন সিঙ্ক চালু':'শুধু এই ফোনে জমা হচ্ছে')+'</div><div class="sub">'+(cloud?'যাদের শেয়ার করা হয়েছে তারা সবাই একই স্টক দেখছে।'+(RO?' আপনার শুধু দেখার অনুমতি আছে।':''):'Claude-এ সাইন ইন করে লিংক খুললে অনলাইন সিঙ্ক চালু হবে।')+'</div></div><div class="btns" style="flex-direction:column">'+(DL?'<button class="b" onclick="bkSave()">Backup ডাউনলোড করুন</button>':'')+(RO?'':'<label class="b" style="text-align:center;cursor:pointer">Backup থেকে ফিরিয়ে আনুন<input type="file" accept=".json,application/json" id="rf" style="display:none"></label>')+'</div>'+(cloud&&lt.length&&!RO?'<div class="card"><div class="nm">এই ফোনে '+lt.length+'টা পুরোনো লেনদেন আছে</div><div class="sub">অনলাইনে তুললে সবাই দেখতে পাবে।</div><div class="btns"><button class="b" onclick="importList(localTx())">অনলাইনে তুলুন</button></div></div>':'');
+  }else if(V==='cdet'){
+    var A=tx.filter(function(t){return t.cat===dc}),F=A.filter(function(t){return cf==='all'||t.type===cf}),bal={},B={};
+    A.slice().reverse().forEach(function(t){var k=(t.item||'')+'|'+t.unit;bal[k]=Math.round(((bal[k]||0)+(t.type==='in'?t.qty:-t.qty))*100)/100;B[t.id]=bal[k]});
+    var PP=pairs(A);PPK=PP;
+    h='<h2>'+dc+'</h2>';
+    if(PP.length)h+='<div class="wrap"><table><tr><th>'+(SUBS[dc]?'Item':'Material')+'</th><th>Unit</th><th class="n">In</th><th class="n">Out</th><th class="n">Stock now</th><th class="n">Min</th></tr>'+PP.map(function(p,ix){return '<tr><td>'+esc(p.it||p.c)+'</td><td>'+esc(p.u)+'</td><td class="n in-c">'+num(p.i)+'</td><td class="n out-c">'+num(p.o)+'</td><td class="n">'+num(stock(p.c,p.u,p.it))+'</td><td class="n">'+minCell(ix)+'</td></tr>'}).join('')+'</table></div>';
+    h+='<div class="chips" style="margin:14px 0">'+[['all','সব'],['in','Stock in'],['out','Stock out']].map(function(r){return '<button class="chip'+(cf===r[0]?' on':'')+'" onclick="pickF(\''+r[0]+'\')">'+r[1]+'</button>'}).join('')+'</div>';
+    h+=F.length?F.map(function(t){var i=t.type==='in';return '<div class="card" style="border-left:5px solid var(--'+(i?'ok':'low')+')"><div class="row"><div>'+(t.item?'<div class="nm">'+esc(t.item)+'</div>':'')+'<div class="'+(i?'in-c':'out-c')+'">'+(i?'Stock in':'Stock out')+'</div><div class="sub">'+fd(t.ts)+'</div></div><div class="'+(i?'in-c':'out-c')+'" style="font-size:20px">'+(i?'+':'\u2212')+num(t.qty)+' '+esc(t.unit)+'</div></div>'+(t.sup?'<div class="sub" style="margin-top:6px">Supplier: <b>'+esc(t.sup)+'</b></div>':'')+(t.note?'<div class="sub">'+(i?'নোট':'কাজ')+': '+esc(t.note)+'</div>':'')+'<div class="sub">এরপর স্টক: '+num(B[t.id])+' '+esc(t.unit)+'</div>'+(t.img?'<img class="inv" src="/_blob/'+esc(t.img)+'" alt="চালান" onclick="this.classList.toggle(\'big\')">':'')+(RO?'':'<div class="btns" style="margin:8px 0 0"><button class="b" onclick="editTx('+t.id+')">সম্পাদনা</button><button class="b" style="color:var(--low)" onclick="askDel('+t.id+')">মুছুন</button></div>')+'</div>'}).join(''):'<div class="empty">'+dc+'-এর কোনো লেনদেন এখনো নেই।</div>';
+  }else{
+    var L=inRange(),P=pairs(L);
+    h='<h2>Report</h2><div class="chips">'+[['today','আজ'],['7','৭ দিন'],['30','৩০ দিন'],['all','সব']].map(function(r){return '<button class="chip'+(rng===r[0]?' on':'')+'" onclick="pickR(\''+r[0]+'\')">'+r[1]+'</button>'}).join('')+'</div><h3>সারসংক্ষেপ</h3>';
+    h+=P.length?'<div class="wrap"><table><tr><th>Material</th><th>Unit</th><th class="n">In</th><th class="n">Out</th><th class="n">Stock now</th></tr>'+P.map(function(p){return '<tr><td>'+esc(p.c)+(p.it?' \u2013 '+esc(p.it):'')+'</td><td>'+esc(p.u)+'</td><td class="n in-c">'+num(p.i)+'</td><td class="n out-c">'+num(p.o)+'</td><td class="n">'+num(stock(p.c,p.u,p.it))+'</td></tr>'}).join('')+'</table></div>':'<div class="empty">এই সময়ে কোনো লেনদেন নেই।</div>';
+    h+='<div class="btns"><button class="b" onclick="window.print()">Print</button><button class="b" onclick="copyR()">Copy</button>'+(DL?'<button class="b" onclick="csvR()">Excel / CSV</button>':'')+'</div><h3>লেনদেনের তালিকা ('+L.length+')</h3>'+L.map(txr).join('');
+  }
+  $('m').innerHTML=h;
+  if($('q'))$('q').oninput=function(){qty=this.value};
+  if($('n'))$('n').oninput=function(){note=this.value};
+  if($('s'))$('s').oninput=function(){sup=this.value};
+  if($('ph'))$('ph').onchange=function(){photo=this.files[0]||null;render()};
+  if($('rf'))$('rf').onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{restore(JSON.parse(r.result))}catch(e){toast('ফাইলটা পড়া যায়নি')}};r.readAsText(f)};
+  if($('sz'))$('sz').oninput=function(){size=this.value};
+  if($('is'))$('is').oninput=function(){isq=this.value;var p=this.selectionStart;render();var x=$('is');x.focus();x.setSelectionRange(p,p)};
+}
+async function commit(){
+  if(busy)return;
+  var v=parseFloat(qty),L=lab();
+  if(!v||v<=0){$('q').focus();return}
+  if(!unit){toast('Unit বেছে নাও');return}
+  if(T==='out'&&v>stock(cat,unit,L)){toast('স্টকে মাত্র '+num(stock(cat,unit,L))+' '+unit+' আছে');return}
+  var t={id:Date.now(),ts:Date.now(),type:T,cat:cat,item:L,unit:unit,qty:v,note:note.trim(),sup:T==='in'?sup.trim():''};
+  var mm=MIN[cat+'|'+L+'|'+unit],warn=T==='out'&&mm>0&&stock(cat,unit,L)-v<=mm;
+  busy=true;
+  if(T==='in'&&photo&&A){toast('ছবি আপলোড হচ্ছে…');try{var r=await A.upload(await shrink(photo));t.img=r.id}catch(e){busy=false;toast('ছবি আপলোড হয়নি, আবার চেষ্টা করো');return}}
+  var ok=await put(t);busy=false;
+  if(!ok)return;
+  toast(T==='in'?'Stock in হয়েছে':(warn?'Stock out হয়েছে, স্টক কম!':'Stock out হয়েছে'));go('home');
+}
+function shrink(f){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){var r=Math.min(1,1400/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*r);c.height=Math.round(im.height*r);c.getContext('2d').drawImage(im,0,0,c.width,c.height);c.toBlob(function(b){b?res(b):rej()},'image/jpeg',.7)};im.onerror=rej;im.src=fr.result};fr.onerror=rej;fr.readAsDataURL(f)})}
+async function put(t){try{await fs.doc('tx/'+t.id).set(t);return true}catch(e){fail(e);return false}}
+async function del(id){try{await fs.doc('tx/'+id).delete();return true}catch(e){fail(e);return false}}
+function fail(e){toast(e&&e.code==='permission-denied'?'আপনার এই কাজের অনুমতি নেই':'সেভ হয়নি, আবার চেষ্টা করো')}
+async function persistMin(m){try{await fs.doc('cfg/min').set({m:Object.keys(m).map(function(k){return{k:k,v:m[k]}})});MIN=m;return true}catch(e){fail(e);return false}}
+function isLow(c,it,u){var m=MIN[c+'|'+(it||'')+'|'+u];return m>0&&stock(c,u,it)<=m}
+function lowHtml(){
+  var L=pairs(tx).filter(function(p){return isLow(p.c,p.it,p.u)});if(!L.length)return'';
+  return '<h3 style="color:var(--low)">স্টক কম ('+L.length+')</h3>'+L.map(function(p){return '<div class="card" style="border-left:5px solid var(--low)"><div class="row"><div class="nm">'+esc(p.c)+(p.it?' – '+esc(p.it):'')+'</div><div class="out-c">'+num(stock(p.c,p.u,p.it))+' '+esc(p.u)+'</div></div><div class="sub">সর্বনিম্ন: '+num(MIN[p.c+'|'+p.it+'|'+p.u])+' '+esc(p.u)+'</div></div>'}).join('')}
+function minCell(ix){var p=PPK[ix],m=MIN[p.c+'|'+p.it+'|'+p.u];return RO?(m?num(m):'—'):'<button class="b" style="flex:none;padding:3px 9px" onclick="setMin('+ix+')">'+(m?num(m):'সেট')+'</button>'}
+function dlg(h){$('dg').innerHTML=h;if(!$('dg').open)$('dg').showModal()}
+function dclose(){$('dg').close()}
+function tget(id){return tx.filter(function(t){return t.id===id})[0]}
+function setMin(i){var p=PPK[i],m=MIN[p.c+'|'+p.it+'|'+p.u];dlg('<h3 style="margin:0 0 4px">'+esc(p.it||p.c)+' ('+esc(p.u)+')</h3><div class="sub">স্টক এর নিচে নামলে Dashboard-এ সতর্কতা দেখাবে। বন্ধ করতে ০ লেখো।</div><h3>সর্বনিম্ন স্টক</h3><input id="mn" type="number" min="0" inputmode="decimal" value="'+(m||'')+'"><div class="btns"><button class="b" onclick="dclose()">বাতিল</button><button class="b" style="background:var(--acc);border-color:var(--acc)" onclick="saveMin('+i+')">সংরক্ষণ</button></div>')}
+async function saveMin(i){var p=PPK[i],k=p.c+'|'+p.it+'|'+p.u,v=parseFloat($('mn').value)||0,m=Object.assign({},MIN);if(v>0)m[k]=v;else delete m[k];if(await persistMin(m)){dclose();render()}}
+function editTx(id){var t=tget(id);dlg('<h3 style="margin:0 0 4px">'+esc(t.cat)+(t.item?' – '+esc(t.item):'')+'</h3><div class="sub">'+(t.type==='in'?'Stock in':'Stock out')+' · '+fd(t.ts)+'</div><h3>Quantity ('+esc(t.unit)+')</h3><input id="eq" type="number" min="0" inputmode="decimal" value="'+t.qty+'">'+(t.type==='in'?'<h3>Supplier name</h3><input id="es" value="'+esc(t.sup)+'">':'')+'<h3>নোট</h3><input id="en" value="'+esc(t.note)+'"><div class="btns"><button class="b" onclick="dclose()">বাতিল</button><button class="b" style="background:var(--acc);border-color:var(--acc)" onclick="saveEdit('+id+')">সংরক্ষণ</button></div>')}
+async function saveEdit(id){
+  var t=tget(id),v=parseFloat($('eq').value);if(!v||v<=0){$('eq').focus();return}
+  if(stock(t.cat,t.unit,t.item)+(v-t.qty)*(t.type==='in'?1:-1)<0){toast('এতে স্টক মাইনাস হয়ে যাবে');return}
+  var n=Object.assign({},t,{qty:v,note:$('en').value.trim()});if(t.type==='in')n.sup=$('es').value.trim();
+  if(await put(n)){dclose();toast('সংরক্ষণ হয়েছে');render()}}
+function askDel(id){var t=tget(id);dlg('<h3 style="margin:0 0 6px">এই লেনদেন মুছবেন?</h3><div class="sub">'+esc(t.cat)+(t.item?' – '+esc(t.item):'')+' · '+(t.type==='in'?'+':'−')+num(t.qty)+' '+esc(t.unit)+'<br>'+fd(t.ts)+'</div><div class="btns"><button class="b" onclick="dclose()">না</button><button class="b" style="background:var(--low);border-color:var(--low);color:#fff" onclick="doDel('+id+')">মুছুন</button></div>')}
+async function doDel(id){var t=tget(id);if(t.type==='in'&&stock(t.cat,t.unit,t.item)-t.qty<0){dclose();toast('মুছলে স্টক মাইনাস হয়ে যাবে');return}if(await del(id)){dclose();toast('মোছা হয়েছে');render()}}
+function dl(name,data){DL.save({filename:name,data:data}).then(function(){toast('ফাইল সেভ হয়েছে')},function(e){if(!e||e.code!=='declined')toast('ফাইল সেভ হয়নি')})}
+function csvq(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'}
+function csvR(){var rows=[['Date','Type','Material','Item','Unit','Quantity','Supplier','Note']].concat(inRange().slice().reverse().map(function(t){return [new Date(t.ts).toLocaleString('en-GB'),t.type==='in'?'Stock in':'Stock out',t.cat,t.item||'',t.unit,t.qty,t.sup||'',t.note||'']}));dl('smc-report.csv','\ufeff'+rows.map(function(r){return r.map(csvq).join(',')}).join('\r\n'))}
+function minArr(){return Object.keys(MIN).map(function(k){return{k:k,v:MIN[k]}})}
+function bkSave(){dl('smc-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({v:1,tx:tx,min:minArr()}))}
+async function importList(list){
+  if(!list||!list.length){toast('ফাইলে কিছু নেই');return}
+  var have={},n=0;tx.forEach(function(t){have[t.id]=1});toast('ফিরিয়ে আনা হচ্ছে…');
+  for(var i=0;i<list.length;i++){var t=list[i];if(!t||!t.id||have[t.id]||!t.cat||!t.unit||!(t.qty>0)||(t.type!=='in'&&t.type!=='out'))continue;if(!await put(t))break;n++}
+  toast(n+'টা লেনদেন যোগ হয়েছে');render()}
+async function restore(d){
+  await importList(Array.isArray(d)?d:d.tx);
+  if(d&&d.min&&d.min.length){var m=Object.assign({},MIN);d.min.forEach(function(x){if(x&&x.k&&x.v>0)m[x.k]=x.v});await persistMin(m)}
+  render()}
+function copyR(){
+  var t='SMC Inventory Report\n'+pairs(inRange()).map(function(p){return p.c+(p.it?' - '+p.it:'')+' ('+p.u+'): In '+num(p.i)+', Out '+num(p.o)+', Stock '+num(stock(p.c,p.u,p.it))}).join('\n');
+  try{navigator.clipboard.writeText(t).then(function(){toast('Copy হয়েছে')},function(){toast('Copy করা যায়নি')})}catch(e){toast('Copy করা যায়নি')}
+}
+$('back').onclick=function(){V==='cdet'?go('dash'):go('home')};
+var ADMIN='joykawser509@gmail.com',CFG={apiKey:"AIzaSyCW_yqAPv170IAlT_zpVmKGennx0cAcM6Q",authDomain:"smc-inventory.firebaseapp.com",projectId:"smc-inventory",storageBucket:"smc-inventory.firebasestorage.app",messagingSenderId:"386235545215",appId:"1:386235545215:web:85c2f18b9939b57101714a"};
+firebase.initializeApp(CFG);var auth=firebase.auth(),fs=firebase.firestore();
+DL={save:function(o){var b=new Blob([o.data],{type:/\.csv$/.test(o.filename)?'text/csv;charset=utf-8':'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=o.filename;document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},500);return Promise.resolve()}};
+function emsg(e){var c=e&&e.code||'';return /invalid-credential|wrong-password|user-not-found|invalid-email/.test(c)?'ইমেইল বা পাসওয়ার্ড ভুল':c==='auth/email-already-in-use'?'এই ইমেইল আগেই আছে':c==='auth/weak-password'?'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের দিন':c==='auth/too-many-requests'?'অনেকবার চেষ্টা হয়েছে, একটু পরে চেষ্টা করুন':'সমস্যা হয়েছে, আবার চেষ্টা করুন'}
+function login(){var e=$('le').value.trim().toLowerCase(),p=$('lp').value;if(!e||!p){toast('ইমেইল ও পাসওয়ার্ড দিন');return}auth.signInWithEmailAndPassword(e,p).catch(function(x){toast(emsg(x))})}
+function signup(){var e=$('le').value.trim().toLowerCase(),p=$('lp').value;if(e!==ADMIN){toast('শুধু অ্যাডমিন নিজে অ্যাকাউন্ট খুলতে পারবেন');return}if(!p){toast('পাসওয়ার্ড দিন');return}auth.createUserWithEmailAndPassword(e,p).catch(function(x){toast(emsg(x))})}
+function logout(){unsubs.forEach(function(f){f()});unsubs=[];tx=[];USERS=[];ME=null;ROLE='';auth.signOut()}
+async function addUser(){
+  var n=$('un').value.trim(),e=$('ue').value.trim().toLowerCase(),p=$('up').value,r=$('ur').value;
+  if(!n||!e||p.length<6){toast('নাম, ইমেইল ও ৬+ অক্ষরের পাসওয়ার্ড দিন');return}
+  try{var sec=firebase.apps.filter(function(a){return a.name==='sec'})[0]||firebase.initializeApp(CFG,'sec');
+    var c=await sec.auth().createUserWithEmailAndPassword(e,p);await fs.doc('users/'+c.user.uid).set({name:n,email:e,role:r});await sec.auth().signOut();toast('যোগ হয়েছে');render()}
+  catch(x){toast(emsg(x))}}
+function setRole(id,r){fs.doc('users/'+id).update({role:r}).then(function(){toast('বদলানো হয়েছে')},fail)}
+function rmUser(id){fs.doc('users/'+id).delete().then(function(){toast('অনুমতি তুলে নেওয়া হয়েছে')},fail)}
+async function enter(u){
+  try{
+    var ref=fs.doc('users/'+u.uid),r=await ref.get();
+    if(!r.exists&&(u.email||'').toLowerCase()===ADMIN){await ref.set({name:'Admin',email:ADMIN,role:'admin'});r=await ref.get()}
+    if(!r.exists){ME=u;V='noacc';render();return}
+    ME=u;ROLE=r.data().role;RO=ROLE==='viewer';
+    unsubs.push(fs.collection('tx').onSnapshot(function(q){tx=q.docs.map(function(d){return d.data()}).sort(function(a,b){return b.ts-a.ts});if(V!=='entry'&&V!=='login')render()},function(){}));
+    unsubs.push(fs.doc('cfg/min').onSnapshot(function(d){MIN={};((d.exists&&d.data().m)||[]).forEach(function(x){MIN[x.k]=x.v});if(V!=='entry'&&V!=='login')render()},function(){}));
+    if(ROLE==='admin')unsubs.push(fs.collection('users').onSnapshot(function(q){USERS=q.docs.map(function(d){var o=d.data();o.id=d.id;return o});if(V==='users')render()},function(){}));
+    V='home';render();
+  }catch(e){ME=u;V='noacc';render()}}
+auth.onAuthStateChanged(function(u){if(!u){V='login';render();return}enter(u)});
+V='login';render();
+</script>
+</body>
+</html>
